@@ -1,19 +1,29 @@
 module Api
-  class UsersController < ApplicationController
+  class ProfilesController < ApplicationController
     include JwtHelper
     before_action :authenticate_request
-      def baslat_post
-        if @current_user
-          post = @current_user.posts.build(post_params)
-          if post.save
-            render json: { message: "Post created successfully" }, status: :created
-          else
-            render json: { error: "Unable to create post" }, status: :unprocessable_entity
-          end
-        else
-          render json: { error: "User not authenticated" }, status: :unauthorized
+    def profile
+      user = @current_user
+      posts = user.posts
+    
+      render json: {
+        user: {
+          id: user.id,
+          email: user.email,
+          # Add more user attributes as needed
+        },
+        posts: posts.map do |post|
+          {
+            id: post.id,
+            content: post.content,
+            created_at: post.created_at,
+            updated_at: post.updated_at,
+            # Add more post attributes as needed
+          }
         end
-      end
+      }
+    end
+     
     private
 
     def authenticate_request
@@ -47,8 +57,7 @@ module Api
         render json: { error: 'Token missing' }, status: :unauthorized
       end
     end
-    
-    
+     
 
 
     

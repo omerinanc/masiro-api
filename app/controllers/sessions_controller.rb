@@ -10,11 +10,14 @@ class SessionsController < ApplicationController
     puts "User found: #{user.inspect}"
   if user && user.authenticate(params["user"]["password"])
     token = JwtHelper.encode({ user_id: user.id })
+puts "Generated Token: #{token}"
+
     session[:id] = user.id 
     render json: {
       status: :created,
       logged_in: true,
-      user: user
+      user: user,
+      token: token
     }
     puts "Login is successful"
   else
